@@ -1,209 +1,95 @@
-import React, { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import '../index.css';
+import React, { useEffect } from 'react';
+import '../index.css'; // We'll create this CSS file next
 
-const ServiceGrid = () => {
-  const services = [
-    {
-      number: '01',
-      image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb',
-      title: 'Web Design & Development',
-      description: 'Logos, colors, type, your brand, fully alive.',
-      features: [
-        'Responsive Design',
-        'Interaction Design',
-        'CMS Integration',
-        'SEO Optimization'
-      ]
-    },
-    {
-      number: '02',
-      image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d',
-      title: 'Brand Identity',
-      description: 'Crafting memorable visual identities that communicate values.',
-      features: [
-        'Logo Design',
-        'Color Theory',
-        'Typography',
-        'Brand Guidelines'
-      ]
-    },
-    {
-      number: '03',
-      image: 'https://images.unsplash.com/photo-1579389083078-4e7018379f7e',
-      title: 'Web Development',
-      description: 'Building fast, responsive websites with modern technologies.',
-      features: [
-        'React.js',
-        'Next.js',
-        'Node.js',
-        'GraphQL'
-      ]
-    },
-    {
-      number: '04',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
-      title: 'Content Creation',
-      description: 'Engaging multimedia content for your target audience.',
-      features: [
-        'Video Production',
-        'Photography',
-        'Copywriting',
-        'Social Media'
-      ]
-    }
-  ];
-
- const cardRefs = useRef([]);
-
+const CardRows = () => {
   useEffect(() => {
-    const cards = cardRefs.current;
-    let ctx; // GSAP context for cleanup
+    const rows = document.querySelectorAll('.card-row');
+    
+    const handleMouseMove = (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateY = (x - centerX) / 30;
+      const rotateX = (centerY - y) / 30;
+      
+      e.currentTarget.style.transform = `translateY(-10px) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+    
+    const handleMouseLeave = (e) => {
+      e.currentTarget.style.transform = 'translateY(0) perspective(1000px) rotateX(0) rotateY(0)';
+    };
 
-    // Only proceed if cards exist
-    if (cards.length > 0) {
-      ctx = gsap.context(() => {
-        cards.forEach((card, index) => {
-          if (!card) return;
-          
-          const image = card.querySelector('.service-image img');
-          const number = card.querySelector('.service-number');
-          const text = card.querySelector('.service-text');
-          const description = text?.querySelector('p');
-          const features = card.querySelector('.service-features');
-
-          // Skip if elements don't exist
-          if (!image || !number || !text || !description || !features) return;
-
-          // Initial state
-          gsap.set(image, { scale: 0.5, opacity: 0 });
-          gsap.set([description, features], { opacity: 0, y: 10 });
-
-          // Mouse enter animation
-          card.addEventListener('mouseenter', () => {
-            gsap.to(card, { 
-              height: 400,
-              duration: 0.6,
-              ease: 'power2.inOut'
-            });
-
-            gsap.to(number, {
-              scale: 1.2,
-              color: '#7C83FF',
-              duration: 0.4,
-              ease: 'back.out(2)'
-            });
-
-            gsap.to(image, {
-              scale: 1,
-              opacity: 1,
-              duration: 0.7,
-              ease: 'elastic.out(1, 0.5)'
-            });
-
-            gsap.to(description, {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              delay: 0.2,
-              ease: 'power2.out'
-            });
-
-            gsap.to(features, {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              delay: 0.3,
-              ease: 'power2.out'
-            });
-          });
-
-          // Mouse leave animation
-          card.addEventListener('mouseleave', () => {
-            gsap.to(card, { 
-              height: 80,
-              duration: 0.6,
-              ease: 'power2.inOut'
-            });
-
-            gsap.to(number, {
-              scale: 1,
-              color: 'white',
-              duration: 0.4,
-              ease: 'back.out(1)'
-            });
-
-            gsap.to(image, {
-              scale: 0.5,
-              opacity: 0,
-              duration: 0.4,
-              ease: 'power2.in'
-            });
-
-            gsap.to([description, features], {
-              opacity: 0,
-              y: 10,
-              duration: 0.3,
-              ease: 'power2.in'
-            });
-          });
-        });
-      }, cardRefs); // Scope GSAP selectors to cardRefs
-    }
+    rows.forEach(row => {
+      row.addEventListener('mousemove', handleMouseMove);
+      row.addEventListener('mouseleave', handleMouseLeave);
+    });
 
     return () => {
-      // Cleanup GSAP animations and event listeners
-      if (ctx) ctx.revert();
-      
-      cards.forEach(card => {
-        if (card) {
-          card.removeEventListener('mouseenter');
-          card.removeEventListener('mouseleave');
-        }
+      rows.forEach(row => {
+        row.removeEventListener('mousemove', handleMouseMove);
+        row.removeEventListener('mouseleave', handleMouseLeave);
       });
     };
   }, []);
 
+  const cardData = [
+    {
+      number: '1',
+      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      title: 'Mountain Majesty',
+      description: 'Majestic peaks that touch the sky, where the air is crisp and the views are breathtaking. Mountains offer a serene escape from the hustle of daily life, inviting adventurers to explore their <span class="highlight">natural wonders</span> and discover the beauty of untouched wilderness.'
+    },
+    {
+      number: '2',
+      image: 'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      title: 'Ocean Depths',
+      description: 'The endless expanse of the ocean, with its rhythmic waves and deep blue hues, has captivated humans for centuries. It\'s a world of <span class="highlight">mystery and beauty</span>, home to countless species and ecosystems that thrive beneath the surface.'
+    },
+    {
+      number: '3',
+      image: 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      title: 'Forest Sanctuary',
+      description: 'Walking through a dense forest, surrounded by ancient trees and the sounds of nature, is a truly magical experience. Forests are the <span class="highlight">lungs of our planet</span>, providing oxygen and habitat for diverse wildlife while offering tranquility to weary souls.'
+    },
+    {
+      number: '4',
+      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      title: 'Desert Mirage',
+      description: 'The desert\'s stark beauty lies in its vast, open spaces and ever-shifting dunes. Though seemingly barren, deserts are filled with <span class="highlight">resilient life</span> that has adapted to thrive in extreme conditions, creating unique ecosystems of survival.'
+    }
+  ];
+
   return (
-    <div className="w-screen mx-7 py-8 px-4 bg-gray-900 min-h-screen">
-      {services.map((service, index) => (
-        <div 
-          className="service-card h-20 p-4 mb-6 rounded-lg bg-gray-800 shadow-lg grid grid-cols-[50px_1fr] overflow-hidden relative cursor-pointer transition-all duration-300 border border-gray-700 hover:shadow-xl hover:shadow-indigo-500/20"
-          key={index}
-          ref={el => cardRefs.current[index] = el}
-        >
-          <div className="service-number text-3xl font-bold text-white self-center transition-all duration-300">
-            {service.number}
+    <div className="container">
+      <div className="title">
+        <h1>Interactive Card Rows</h1>
+        <p>Hover over each row to reveal the hidden content and image</p>
+      </div>
+      
+      {cardData.map((card, index) => (
+        <div className="card-row" key={index}>
+          <div className="number">{card.number}</div>
+          <div className="image-container">
+            <img src={card.image} alt={card.title} />
           </div>
-          
-          <div className="service-content grid grid-cols-2 grid-rows-[auto_1fr_auto] h-full">
-            <div className="service-image col-span-1 row-span-3 flex justify-center items-center p-4 overflow-hidden">
-              <img 
-                src={service.image} 
-                alt={service.title} 
-                className="max-h-64 w-auto object-contain rounded"
-              />
-            </div>
-            
-            <div className="service-text col-span-1 row-span-1 text-right p-4 self-end">
-              <h2 className="text-3xl text-white font-semibold mb-2">{service.title}</h2>
-              <p className="text-gray-400 text-base leading-relaxed">{service.description}</p>
-            </div>
-            
-            <div className="service-features col-span-1 row-span-3 flex flex-wrap justify-end gap-2 p-4 self-end">
-              {service.features.map((feature, i) => (
-                <span 
-                  key={i} 
-                  className="feature-tag bg-gray-700 px-4 py-2 rounded-full text-xs text-indigo-400 font-medium transition-all duration-300 hover:bg-indigo-400 hover:text-gray-900"
-                >
-                  {feature}
-                </span>
-              ))}
-            </div>
+          <div className="content">
+            <h3>{card.title}</h3>
+          </div>
+          <div className="paragraph-container">
+            <p dangerouslySetInnerHTML={{ __html: card.description }} />
           </div>
         </div>
       ))}
+      
+      <div className="footer">
+        <p>Interactive Card Rows with Expand Animation | Hover over each row to see the effect</p>
+      </div>
     </div>
-);}
+  );
+};
 
-export default ServiceGrid;
+export default CardRows;
